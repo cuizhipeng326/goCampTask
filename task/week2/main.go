@@ -18,7 +18,7 @@ func DaoMocker(req interface{}) error {
 
 // daoProcess mock process a specific db operation
 func daoProcess(req interface{}) error {
-	return errors.New("no rows matched")
+	return ErrNoRows
 }
 
 // BizMocker mock business who need get some resource from db
@@ -45,10 +45,10 @@ func bizProcess2(req interface{}) error {
 	if err := DaoMocker(req); err != nil {
 		if errors.Is(err, ErrNoRows) {
 			// 业务中直接调用dao层的接口负责把相关定位问题用的信息或堆栈跟踪信息封装到err中并抛给上层
-			return fmt.Errorf("no record found in db: %v", err)
+			return fmt.Errorf("no record found in db: %w", err)
 		}
 
-		return fmt.Errorf("db process failed, %v", err)
+		return fmt.Errorf("db process failed, %w", err)
 	}
 
 	return nil
