@@ -1,0 +1,10 @@
+[Nacos]
+
+[[Nacos.ServerConfigs]]
+IpAddr = "192.168.9.102"
+Port = 8848
+
+[Nacos.ClientConfig]
+TimeoutMs = 10000
+BeatInterval = 5000
+NotLoadCacheAtStart = true

@@ -1,0 +1,7 @@
+[ClientHttp]
+ip = "192.168.9.221"
+port = 8090
+url = "/authority/file/license"
+appid = "xxxxInput"
+secret = "xxxx@nYd*4M]ipIv+"
+

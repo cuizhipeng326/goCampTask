@@ -1,0 +1,116 @@
+// 定义项目 API 的 proto 文件 可以同时描述 gRPC 和 HTTP API
+// protobuf 文件参考:
+//  - https://developers.google.com/protocol-buffers/
+syntax = "proto3";
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+// package 命名使用 {appid}.{version} 的方式, version 形如 v1, v2 ..
+package demo.service.v1;
+
+// NOTE: 最后请删除这些无用的注释 (゜-゜)つロ
+
+option go_package = "api";
+option (gogoproto.goproto_getters_all) = false;
+
+service License {
+  rpc Ping(.google.protobuf.Empty) returns (.google.protobuf.Empty);
+  rpc SayHello(HelloReq) returns (.google.protobuf.Empty);
+  rpc SayHelloURL(HelloReq) returns (HelloResp) {
+    option (google.api.http) = {
+      get: "/kratos-demo/say_hello"
+    };
+  };
+  rpc GetHardwareCode(.google.protobuf.Empty) returns(HardwareCodeResp){
+    option (google.api.http) = {
+      get: "/v3/hardwareCode"
+    };
+  }
+  rpc GetLicenseAll(.google.protobuf.Empty) returns(LicenseInfo){
+    option (google.api.http) = {
+      get: "/v3/license"
+    };
+  }
+  rpc GetLicenseProject(ProjectLicenseReq) returns(ProjectLicense){
+    option (google.api.http) = {
+      get: "/v3/license/project"
+    };
+  }
+  rpc PostLicenseFile(.google.protobuf.Empty) returns(.google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v3/license/file"
+    };
+  }
+  rpc PostLicenseSync(.google.protobuf.Empty) returns(.google.protobuf.Empty){
+    option (google.api.http) = {
+      post: "/v3/license/sync"
+    };
+  }
+  rpc GetPermissionProject(ProjectLicenseReq) returns(PermissionProject){
+    option (google.api.http) = {
+      get: "/v3/permission/project"
+    };
+  }
+}
+
+message HelloReq {
+  string  name = 1 [(gogoproto.moretags) = 'form:"name" validate:"required"'];
+}
+
+message HelloResp {
+  string  Content = 1 [(gogoproto.jsontag) = 'content'];
+}
+
+
+message HardwareCodeResp{
+  string  HardwareCode = 1 [(gogoproto.jsontag) = 'hardwareCode'];
+}
+
+message LicenseInfo  {
+  int32    LicenseId = 1             [(gogoproto.jsontag) = "licenseId"];    //授权id
+  string  HardwareCode = 2           [(gogoproto.jsontag) = "hardwareCode"]; //硬件指纹
+  int32    ProductId = 3             [(gogoproto.jsontag) = "productId"];    //产品id
+  string  ProductName = 4           [(gogoproto.jsontag) = "productName"];  //产品名称
+  string  Authmessage = 5          [(gogoproto.jsontag) = "authmessage"];     //许可方式 soft,hardware
+  repeated ProjectLicense ProjectLicenses = 6 [(gogoproto.jsontag) = "projectLicenses"];
+}
+
+message ProjectLicenseReq{
+  string ProjectLicense = 1 [(gogoproto.moretags) = 'form:"projectLicense" validate:"required"'];
+}
+
+// 项目授权信息
+message ProjectLicense {
+  int32    ProjectLicenseId = 1              [(gogoproto.jsontag) = "projectLicenseId"]; //项目授权许可id
+  string  ProjectLicense = 2            [(gogoproto.jsontag) = "projectLicense"];   //项目license码
+  string  ProjectName = 3     [(gogoproto.jsontag) = "projectName"];      //项目名称
+  int32    Status = 4[(gogoproto.jsontag) = "status"];           //授权状态：0：在用，1：停用，2：逾期，3：废弃
+  int32    Permanent = 5 [(gogoproto.jsontag) = "permanent"];        //是否永久授权0：非永久，1：永久
+  string  AuthBeginTime = 6 [(gogoproto.jsontag) = "authBeginTime"];    //授权开始时间
+  string  AuthExpireTime = 7[(gogoproto.jsontag) = "authExpireTime"];   //过期时间
+  repeated LicenseModule Modules = 8 [(gogoproto.jsontag) = "modules"];
+  repeated LicesneResource Resources = 9[(gogoproto.jsontag) = "resources"];
+}
+
+// 授权内容
+message LicenseModule  {
+  int32    ModuleId = 1    [(gogoproto.jsontag) = "moduleId"];
+  string  Name = 2 [(gogoproto.jsontag) = "name"];    //名称
+  int32    IsAuth = 3     [(gogoproto.jsontag) = "isAuth"]; //是否授权 0 否 1 是
+}
+
+message LicesneResource  {
+  int32    ModuleId = 1    [(gogoproto.jsontag) = "moduleId"]; //模块id
+  string  Name = 2 [(gogoproto.jsontag) = "name"];     //名称
+  int32    Quota = 3    [(gogoproto.jsontag) = "quota"];    //配额
+}
+
+message PostLicenseFileReq{
+  string File = 1 [(gogoproto.moretags) = 'form:"file" validate:"required"'];
+}
+
+message PermissionProject{
+  string  Content = 1 [(gogoproto.jsontag) = "content"];
+}

@@ -1,0 +1,6 @@
+[log]
+family = "license-service"
+dir = "/opt/xxxx_cloud/support_server/license_server/log/"
+stdout = true
+v = 0
+MaxLogFile = 30
